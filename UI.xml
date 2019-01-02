@@ -1,0 +1,518 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE MudletPackage>
+<MudletPackage version="1.001">
+	<ScriptPackage>
+		<ScriptGroup isActive="yes" isFolder="yes">
+			<name>Template</name>
+			<packageName>Template</packageName>
+			<script></script>
+			<eventHandlerList />
+			<ScriptGroup isActive="yes" isFolder="yes">
+				<name>CSSman</name>
+				<packageName>CSSman</packageName>
+				<script></script>
+				<eventHandlerList />
+				<Script isActive="yes" isFolder="no">
+					<name>CSSMan</name>
+					<packageName></packageName>
+					<script>-- CSSMan by Vadi. Public domain.
+
+CSSMan = {}
+CSSMan.__index = CSSMan
+
+function CSSMan.new(stylesheet)
+  local obj  = { stylesheet = {} }
+  setmetatable(obj,CSSMan)
+  local trim = string.trim
+
+  assert(type(stylesheet) == "string", "CSSMan.new: no stylesheet provided. A possible error is that you might have used CSSMan.new, not CSSMan:new")
+
+  for line in stylesheet:gmatch("[^\r\n]+") do
+    local attribute, value = line:match("^(.-):(.-);$")
+    if attribute and value then
+      attribute, value = trim(attribute), trim(value)
+      obj.stylesheet[attribute] = value
+    end
+  end
+
+  return obj
+end
+
+function CSSMan:set(key, value)
+  self.stylesheet[key] = value
+end
+
+function CSSMan:get(key)
+  return self.stylesheet[key]
+end
+
+function CSSMan:getCSS(key)
+  local lines, concat = {}, table.concat
+  for k,v in pairs(self.stylesheet) do lines[#lines+1] = concat({k,": ", v, ";"}) end
+  return concat(lines, "\n")
+end
+
+function CSSMan:gettable()
+  return self.stylesheet
+end
+
+function CSSMan:settable(tbl)
+  assert(type(tbl) == "table", "CSSMan:settable: table expected, got "..type(tbl))
+
+  self.stylesheet = tbl
+end</script>
+					<eventHandlerList />
+				</Script>
+			</ScriptGroup>
+			<ScriptGroup isActive="yes" isFolder="yes">
+				<name>GUI</name>
+				<packageName></packageName>
+				<script>GUI = GUI or {}
+</script>
+				<eventHandlerList />
+				<Script isActive="yes" isFolder="no">
+					<name>Set Borders</name>
+					<packageName></packageName>
+					<script>local w,h = getMainWindowSize()
+setBorderLeft(w/8)
+setBorderTop(h/10)
+setBorderBottom(h/4)
+setBorderRight(w/4)</script>
+					<eventHandlerList />
+				</Script>
+				<Script isActive="yes" isFolder="no">
+					<name>Create Background</name>
+					<packageName></packageName>
+					<script>GUI.BackgroundCSS = CSSMan.new([[
+  background-color: rgb(20,0,20);
+]])
+
+GUI.Left = Geyser.Label:new({
+  name = "GUI.Left",
+  x = 0, y = 0,
+  width = "15%",
+  height = "100%",
+})
+GUI.Left:setStyleSheet(GUI.BackgroundCSS:getCSS())
+
+GUI.Right = Geyser.Label:new({
+  name = "GUI.Right",
+  x = "-25%", y = 0,
+  width = "25%",
+  height = "100%",
+})
+GUI.Right:setStyleSheet(GUI.BackgroundCSS:getCSS())
+
+GUI.Bottom = Geyser.Label:new({
+  name = "GUI.Bottom",
+  x = "15%", y = "75%",
+  width = "60%",
+  height = "25%",
+})
+GUI.Bottom:setStyleSheet(GUI.BackgroundCSS:getCSS())</script>
+					<eventHandlerList />
+				</Script>
+				<Script isActive="yes" isFolder="no">
+					<name>Header Icons</name>
+					<packageName></packageName>
+					<script>GUI.Header = Geyser.HBox:new({
+  name = "GUI.Header",
+  x = 0, y = 0,
+  width = "100%",
+  height = "100%",
+},GUI.Top)
+
+GUI.IconCSS = CSSMan.new([[
+  background-color: rgba(0,0,0,100);
+  border-style: solid;
+  border-width: 1px;
+  border-color: white;
+  border-radius: 5px;
+  margin: 5px;
+  qproperty-wordWrap: true;
+]])</script>
+					<eventHandlerList />
+				</Script>
+				<Script isActive="yes" isFolder="no">
+					<name>Boxes</name>
+					<packageName></packageName>
+					<script>GUI.BoxCSS = CSSMan.new([[
+  background-color: rgba(0,0,0,100);
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 10px;
+  border-color: white;
+  margin: 10px;
+]])
+
+ChatWindow = Geyser.MiniConsole:new({
+  name="ChatWindow",
+  x="3%", y="54%",
+  autoWrap = true,
+  color = "black",
+  scrollBar = false,
+  fontSize = 12,
+  width="95%", height="45%",
+}, GUI.Right)
+
+GUI.ChatLabel = Geyser.Label:new({
+	name = "ChatLabel",
+	x = "3%", y = "51%",
+	autoWrap = true,
+	fontSize = 12,
+	width = "95%", height = "3%",
+	}, GUI.Right)
+	GUI.ChatLabel:setStyleSheet(GUI.BackgroundCSS:getCSS())
+	GUI.ChatLabel:echo("Chat")
+
+GUI.Box2 = Geyser.Mapper:new({
+  name = "Mapper",
+  x = "3%", y = "0%",
+  width = "95%",
+  height = "50%",
+}, GUI.Right)
+
+
+GUI.Box4 = Geyser.Label:new({
+  name = "GUI.Box4",
+  x = "0%", y = "5%",
+  width = "100%",
+  height = "40%",
+},GUI.Left)
+GUI.Box4:setStyleSheet(GUI.BoxCSS:getCSS())
+GUI.Box4:echo("&lt;center&gt;GUI.Box4")
+
+GUI.roomLabel = Geyser.Label:new({
+	name = "GUI.roomLabel",
+	x = "5%", y = "1%",
+	width = "90%",
+	height = "5%",
+	fontSize = 12,
+}, GUI.Left)
+GUI.roomLabel:setStyleSheet(GUI.BackgroundCSS:getCSS())
+GUI.roomLabel:echo("Room Objects")
+
+--GUI.Box5 = Geyser.Label:new({
+--  name = "GUI.Box5",
+--  x = "0%", y = "25%",
+ -- width = "50%",
+ -- height = "50%",
+--},GUI.Left)
+--GUI.Box5:setStyleSheet(GUI.BoxCSS:getCSS())
+--GUI.Box5:echo("&lt;center&gt;GUI.Box5")
+
+GUI.Box6 = Geyser.Label:new({
+  name = "GUI.Box6",
+  x = "0%", y = "75%",
+  width = "100%",
+  height = "25%",
+},GUI.Left)
+GUI.Box6:setStyleSheet(GUI.BoxCSS:getCSS())
+GUI.Box6:echo("")
+
+GUI.Box7 = Geyser.Label:new({
+  name = "GUI.Box7",
+  x = "0%", y = "50%",
+  width = "100%",
+  height = "25%",
+},GUI.Left)
+GUI.Box7:setStyleSheet(GUI.BoxCSS:getCSS())
+
+GUI.defList = Geyser.MiniConsole:new({
+	name = "GUI.defList",
+	x = "5%", y="8%",
+	autoWrap = true,
+	color = "black",
+	scrollBar = true,
+	fontSize = 11,
+	width = "90%", height = "85%",
+	}, GUI.Box7)
+	
+GUI.defLabel = Geyser.Label:new({
+	name = "defLabel",
+	x = "5%", y="47%",
+	fontSize = 12,
+	width = "90%", height = "4%",
+	}, GUI.Left)
+	GUI.defLabel:setStyleSheet(GUI.BackgroundCSS:getCSS())
+	GUI.defLabel:echo("Defences");
+
+roomInfo = Geyser.MiniConsole:new({
+  name="roomInfo",
+  x="5%", y="8%",
+  autoWrap = true,
+  color = "black",
+  scrollBar = false,
+  fontSize = 11,
+  width="90%", height="85%",
+}, GUI.Box4)</script>
+					<eventHandlerList />
+				</Script>
+				<Script isActive="yes" isFolder="no">
+					<name>Gauges</name>
+					<packageName></packageName>
+					<script>GUI.Footer = Geyser.HBox:new({
+  name = "GUI.Footer",
+  x = 0, y = 0,
+  width = "100%",
+  height = "75%",
+},GUI.Bottom)
+
+GUI.LeftColumn = Geyser.VBox:new({
+  name = "GUI.LeftColumn",
+},GUI.Footer)
+
+GUI.RightColumn = Geyser.VBox:new({
+  name = "GUI.RightColumn",
+},GUI.Footer)
+
+GUI.GaugeBackCSS = CSSMan.new([[
+  background-color: rgba(0,0,0,0);
+  border-style: solid;
+  border-color: white;
+  border-width: 1px;
+  border-radius: 5px;
+  margin: 5px;
+]])
+
+GUI.GaugeFrontCSS = CSSMan.new([[
+  background-color: rgba(0,0,0,0);
+  border-style: solid;
+  border-color: white;
+  border-width: 1px;
+  border-radius: 5px;
+  margin: 5px;
+]])
+
+GUI.Health = Geyser.Gauge:new({
+  name = "GUI.Health",
+},GUI.LeftColumn)
+GUI.Health.back:setStyleSheet(GUI.GaugeBackCSS:getCSS())
+GUI.GaugeFrontCSS:set("background-color","red")
+GUI.Health.front:setStyleSheet(GUI.GaugeFrontCSS:getCSS())
+
+
+GUI.Essence = Geyser.Gauge:new({
+  name = "GUI.Essence",
+},GUI.LeftColumn)
+GUI.Essence.back:setStyleSheet(GUI.GaugeBackCSS:getCSS())
+GUI.GaugeFrontCSS:set("background-color","green")
+GUI.Essence.front:setStyleSheet(GUI.GaugeFrontCSS:getCSS())
+
+
+GUI.Mana = Geyser.Gauge:new({
+  name = "GUI.Mana",
+},GUI.RightColumn)
+GUI.Mana.back:setStyleSheet(GUI.GaugeBackCSS:getCSS())
+GUI.GaugeFrontCSS:set("background-color","blue")
+GUI.Mana.front:setStyleSheet(GUI.GaugeFrontCSS:getCSS())
+
+
+GUI.Rage = Geyser.Gauge:new({
+  name = "GUI.Rage",
+},GUI.RightColumn)
+GUI.Rage.back:setStyleSheet(GUI.GaugeBackCSS:getCSS())
+GUI.GaugeFrontCSS:set("background-color","purple")
+GUI.Rage.front:setStyleSheet(GUI.GaugeFrontCSS:getCSS())
+</script>
+					<eventHandlerList />
+				</Script>
+				<Script isActive="yes" isFolder="no">
+					<name>TargetPane</name>
+					<packageName></packageName>
+					<script>GUI.TargetPane = Geyser.HBox:new({
+  name = "GUI.TargetPane",
+  x = 0, y = "75%",
+  width = "100%",
+  height = "25%",
+},GUI.Bottom)
+
+GUI.Target = Geyser.Label:new({
+  name = "Target",
+  x = "5%", y = "0%",
+  width = "10%",
+  height = "25%",
+}, GUI.TargetPane)
+GUI.Target:setStyleSheet([[
+  background-color: rgba(0,0,0,0%);
+]])
+GUI.Target:setFontSize(12)
+GUI.Target:echo("Target: ")</script>
+					<eventHandlerList />
+				</Script>
+				<Script isActive="yes" isFolder="no">
+					<name>CharacterPanel</name>
+					<packageName></packageName>
+					<script>GUI.CharacterPanel = Geyser.Label:new({
+	name = "GUI.CharacterPanel",
+  x = "10%", y = "0%",
+  width = "95%",
+  height = "40%",
+	fontSize = 14,
+},GUI.Box6)
+
+GUI.CharacterPanel:setStyleSheet([[
+  background-color: rgba(0,0,0,0%);
+]])
+
+GUI.CharacterPanel:echo(charName)
+
+GUI.JobPanel = Geyser.Label:new({
+	name = "GUI.JobPanel",
+  x = "10%", y = "13%",
+  width = "95%",
+  height = "40%",
+	fontSize = 11,
+},GUI.Box6)
+
+GUI.JobPanel:setStyleSheet([[
+  background-color: rgba(0,0,0,0%);
+]])
+
+GUI.JobPanel:echo(class)
+
+GUI.LevelPanel = Geyser.Label:new({
+	name = "GUI.LevelPanel",
+  x = "45%", y = "5%",
+  width = "95%",
+  height = "40%",
+	fontSize = 11,
+},GUI.Box6)
+
+GUI.LevelPanel:setStyleSheet([[
+  background-color: rgba(0,0,0,0%);
+]])
+
+GUI.LevelPanel:echo("Level: " .. level)
+
+GUI.charIcon = Geyser.Label:new({
+  name = "GUI.charIcon",
+  x = "43%", y = "35%",
+  width = "50%", height = "55%",
+}, GUI.Box6)
+
+homeDir = getMudletHomeDir()
+GUI.charIcon:setStyleSheet([[
+  border-image: url(]] .. homeDir .. [[/imgs/icon.png);
+	
+]])</script>
+					<eventHandlerList />
+				</Script>
+			</ScriptGroup>
+			<ScriptGroup isActive="yes" isFolder="yes">
+				<name>GMCP Handlers</name>
+				<packageName></packageName>
+				<script>-------------------------------------------------
+--         Put your Lua functions here.        --
+--                                             --
+-- Note that you can also use external Scripts --
+-------------------------------------------------
+</script>
+				<eventHandlerList />
+				<Script isActive="no" isFolder="no">
+					<name>skills_test</name>
+					<packageName></packageName>
+					<script>function skills_test()
+  echo(display(gmcp.Char.Skills.List.list))
+end</script>
+					<eventHandlerList>
+						<string>gmcp.Char.Skills</string>
+					</eventHandlerList>
+				</Script>
+				<Script isActive="no" isFolder="no">
+					<name>sample_request</name>
+					<packageName></packageName>
+					<script>sendGMCP([[Char.Skills.Get { "group": "necromancy"}]])
+send("\n")
+</script>
+					<eventHandlerList />
+				</Script>
+				<Script isActive="yes" isFolder="no">
+					<name>room_list_handler</name>
+					<packageName></packageName>
+					<script>function room_list_handler()
+	if gmcp.Char.Items.List.location == "room" then
+		roomItems = gmcp.Char.Items.List.items
+		
+		clearWindow("roomInfo");
+		roomObjNames = ""
+		
+		for k in pairs(roomItems) do 
+			roomObjNames = roomObjNames .. "* " .. roomItems[k].name .. "\n"
+		end
+		
+		roomInfo:echo(roomObjNames)
+		
+	end
+end</script>
+					<eventHandlerList>
+						<string>gmcp.Char.Items.List</string>
+					</eventHandlerList>
+				</Script>
+				<Script isActive="yes" isFolder="no">
+					<name>def_list_handler</name>
+					<packageName></packageName>
+					<script>function def_list_handler()
+		myDefs = "";
+		clearWindow("GUI.defList");
+		for k in pairs(gmcp.Char.Defences.List) do
+			myDefs = myDefs .. "+" .. gmcp.Char.Defences.List[k].name .. "\n";
+		end
+		GUI.defList:echo(myDefs);
+end</script>
+					<eventHandlerList>
+						<string>gmcp.Char.Defences.List</string>
+					</eventHandlerList>
+				</Script>
+				<Script isActive="yes" isFolder="no">
+					<name>char_info_handler</name>
+					<packageName></packageName>
+					<script>function char_info_handler()
+
+	if gmcp.Char.Status.name ~= nil then
+	charName = gmcp.Char.Status.name;
+	end
+	
+	if gmcp.Char.Status.class ~= nil then
+	class = gmcp.Char.Status.class;
+	end
+	
+	if gmcp.Char.Status.level ~= nil then
+	level = gmcp.Char.Status.level;
+	end
+
+end</script>
+					<eventHandlerList>
+						<string>gmcp.Char.Status</string>
+					</eventHandlerList>
+				</Script>
+				<Script isActive="yes" isFolder="no">
+					<name>def_added_handler</name>
+					<packageName></packageName>
+					<script>function def_added_handler()
+myDefs = myDefs .. "+" .. gmcp.Char.Defences.Add.name .. "\n";
+clearWindow("GUI.defList");
+GUI.defList:echo(myDefs);
+end</script>
+					<eventHandlerList>
+						<string>gmcp.Char.Defences.add</string>
+						<string>gmcp.Char.Defences.Add</string>
+					</eventHandlerList>
+				</Script>
+				<Script isActive="yes" isFolder="no">
+					<name>def_removed_handler</name>
+					<packageName></packageName>
+					<script>-------------------------------------------------
+--         Put your Lua functions here.        --
+--                                             --
+-- Note that you can also use external Scripts --
+-------------------------------------------------
+</script>
+					<eventHandlerList>
+						<string>gmcp.Char.Defences.remove</string>
+					</eventHandlerList>
+				</Script>
+			</ScriptGroup>
+		</ScriptGroup>
+	</ScriptPackage>
+</MudletPackage>
